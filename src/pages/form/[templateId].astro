@@ -1,0 +1,25 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import EmailForm from '../../components/EmailForm.astro';
+
+export function getStaticPaths() {
+    return [
+        { params: { templateId: 'template1' } },
+        { params: { templateId: 'template2' } },
+    ];
+}
+
+const { templateId } = Astro.params;
+
+// Validar que el templateId sea válido
+if (!['template1', 'template2'].includes(templateId)) {
+    return Astro.redirect('/');
+}
+---
+
+<Layout title="Enviar Email">
+    <main class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center mb-8">Enviar Email</h1>
+        <EmailForm templateId={templateId} client:load />
+    </main>
+</Layout>

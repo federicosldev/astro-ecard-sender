@@ -1,0 +1,136 @@
+---
+import { emailJSTemplates, SERVICE_ID, PUBLIC_KEY } from '../lib/emailConfig';
+
+interface Props {
+    templateId: string;
+}
+
+const { templateId } = Astro.props;
+---
+
+<form
+    id="emailForm"
+    class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md"
+    data-template-id={templateId}
+>
+    <div class="mb-4">
+        <label for="to_email" class="block text-gray-700 font-medium mb-2"
+            >Nombre</label
+        >
+        <input
+            type="text"
+            id="user_nameid"
+            name="user_name"
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+    </div>
+    <div class="mb-4">
+        <label for="to_email" class="block text-gray-700 font-medium mb-2"
+            >Email Destinatario</label
+        >
+        <input
+            type="email"
+            id="user_emailid"
+            name="user_email"
+            required
+            multiple
+            placeholder="example@email.com, second@email.com"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+    </div>
+    <div class="mb-4">
+        <label for="to_email" class="block text-gray-700 font-medium mb-2"
+            >Titulo Tarjeta</label
+        >
+        <input
+            type="text"
+            id="email_titleid"
+            name="email_title"
+            required
+            multiple
+            placeholder="Titulo"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+    </div>
+
+    <div class="mb-4">
+        <label for="subject" class="block text-gray-700 font-medium mb-2"
+            >Asunto</label
+        >
+        <input
+            type="text"
+            id="email_subjectid"
+            name="email_subject"
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+    </div>
+
+    <div class="mb-4">
+        <label for="message" class="block text-gray-700 font-medium mb-2"
+            >Mensaje</label
+        >
+        <textarea
+            id="messageid"
+            name="message"
+            rows="4"
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        ></textarea>
+    </div>
+
+    <button
+        type="submit"
+        class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+    >
+        Enviar Email
+    </button>
+
+    <p class="mt-2 text-sm text-gray-600">
+        Usando plantilla: {templateId === 'template1' ? '1' : '2'}
+    </p>
+</form>
+
+<script>
+    import emailjs from '@emailjs/browser';
+
+    const SERVICE_ID = 'service_dguz4ea';
+    const PUBLIC_KEY = 'dLbI_62ScTXbvplEG';
+    const TEMPLATES = {
+        template1: 'template_kdtsba4',
+        template2: 'template_ypnjd2j',
+    };
+
+    const form = document.getElementById('emailForm');
+    const localTemplateId = form?.getAttribute('data-template-id');
+    const emailJSTemplateId = TEMPLATES[localTemplateId] || TEMPLATES.template1;
+
+    form?.addEventListener('submit', async e => {
+        e.preventDefault();
+
+        try {
+            const formElement = e.target as HTMLFormElement;
+            const formData = new FormData(formElement);
+
+            await emailjs.send(
+                SERVICE_ID,
+                emailJSTemplateId,
+                {
+                    user_name: formData.get('user_name'),
+                    user_email: formData.get('user_email'),
+                    email_title: formData.get('email_title'),
+                    email_subject: formData.get('email_subject'),
+                    message: formData.get('message'),
+                },
+                PUBLIC_KEY,
+            );
+
+            alert('Email enviado correctamente!');
+            formElement.reset();
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al enviar el email. Por favor, intenta nuevamente.');
+        }
+    });
+</script>
